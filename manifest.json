@@ -8,12 +8,12 @@
   "theme_color": "#25D366",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/192/124/124034.png",
+      "src": "img.icons8.com/office/192/chat.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/124/124034.png",
+      "src": "img.icons8.com/office/512/chat.png",
       "sizes": "512x512",
       "type": "image/png"
     }
