@@ -1,5 +1,6 @@
-const CACHE_NAME = 'wa-direct-v1';
+const CACHE_NAME = 'wa-direct-v2'; // Versi dinaikkan
 const ASSETS = [
+  './', // Menandakan root/index.html
   'index.html',
   'manifest.json',
   'https://cdn.tailwindcss.com',
@@ -12,7 +13,26 @@ const ASSETS = [
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
+      // Menggunakan map untuk menangani kegagalan satu per satu agar tidak gagal total
+      return Promise.all(
+        ASSETS.map(url => {
+          return cache.add(url).catch(err => console.warn(`Gagal memuat aset: ${url}`, err));
+        })
+      );
+    })
+  );
+  self.skipWaiting();
+});
+
+// Activate Event - Untuk menghapus cache lama
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.map((key) => {
+          if (key !== CACHE_NAME) return caches.delete(key);
+        })
+      );
     })
   );
 });
@@ -21,7 +41,10 @@ self.addEventListener('install', (e) => {
 self.addEventListener('fetch', (e) => {
   e.respondWith(
     caches.match(e.request).then((response) => {
-      return response || fetch(e.request);
+      // Return dari cache, jika tidak ada baru ambil dari network
+      return response || fetch(e.request).catch(() => {
+        // Opsional: berikan fallback jika offline total dan aset tidak ada di cache
+      });
     })
   );
 });
